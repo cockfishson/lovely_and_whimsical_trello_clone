@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { TrelloServices } from "../services/trelloServices.js";
 
 export class TrelloController {
-    // Boards
     public static async getAllBoards(req: Request, res: Response): Promise<void> {
         const boards = await TrelloServices.getAllBoards();
         res.status(200).json({ success: true, data: boards });

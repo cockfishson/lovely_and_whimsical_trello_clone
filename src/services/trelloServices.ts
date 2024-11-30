@@ -111,26 +111,27 @@ export class TrelloServices {
             if (!board) {
                 throw new CustomError(HttpStatus.BAD_REQUEST, "Board not found");
             }
-            
+
             for (const listData of lists) {
                 const list = await List.findByPk(listData.list_id);
                 if (!list) {
                     throw new CustomError(HttpStatus.BAD_REQUEST, `List ${listData.list_id} not found`);
                 }
-                
+
                 await list.update({
                     title: listData.title,
                     position: listData.position,
                     updated_at: new Date()
                 }, { transaction: t });
-                
+
                 if (listData.cards && listData.cards.length > 0) {
                     for (const cardData of listData.cards) {
                         const card = await TrelloCard.findByPk(cardData.card_id);
                         if (!card) {
                             throw new CustomError(HttpStatus.BAD_REQUEST, `Card ${cardData.card_id} not found`);
                         }
-                        
+
+
                         await card.update({
                             title: cardData.title,
                             description: cardData.description,
@@ -140,7 +141,7 @@ export class TrelloServices {
                     }
                 }
             }
-            
+
             await t.commit();
         } catch (error) {
             await t.rollback();
