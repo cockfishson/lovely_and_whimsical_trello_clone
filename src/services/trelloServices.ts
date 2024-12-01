@@ -54,8 +54,8 @@ export class TrelloServices {
 
         const newBoard = await Board.create({
             title,
-            created_at: new Date(),
-            updated_at: new Date(),
+            created_at: sequelize.literal("CURRENT_TIMESTAMP"),
+            updated_at: sequelize.literal("CURRENT_TIMESTAMP"),
         });
 
         return newBoard;
@@ -121,7 +121,7 @@ export class TrelloServices {
                 await list.update({
                     title: listData.title,
                     position: listData.position,
-                    updated_at: new Date()
+                    updated_at: sequelize.literal("CURRENT_TIMESTAMP")
                 }, { transaction: t });
 
                 if (listData.cards && listData.cards.length > 0) {
@@ -136,7 +136,7 @@ export class TrelloServices {
                             title: cardData.title,
                             description: cardData.description,
                             position: cardData.position,
-                            updated_at: new Date()
+                            updated_at: sequelize.literal("CURRENT_TIMESTAMP")
                         }, { transaction: t });
                     }
                 }
@@ -166,14 +166,15 @@ export class TrelloServices {
         if (!board) {
             throw new CustomError(HttpStatus.NOT_FOUND, "No such board");
         }
-    
+
         const newList = await List.create({
-            board_id: id, 
+            board_id: id,
             title: data.title,
             position: data.position,
-            created_at: new Date(), 
-            updated_at: new Date(),
+            created_at: sequelize.literal("CURRENT_TIMESTAMP"),
+            updated_at: sequelize.literal("CURRENT_TIMESTAMP"),
         });
+
         return newList;
     }    
     public static async updateList(id: number, data: { title?: string; position?: number }): Promise<object> {
@@ -232,8 +233,8 @@ export class TrelloServices {
             title: data.title,
             description: data.description || "",
             position: data.position,
-            created_at: new Date(),
-            updated_at: new Date(),
+            created_at: sequelize.literal("CURRENT_TIMESTAMP"),
+            updated_at: sequelize.literal("CURRENT_TIMESTAMP"),
         });
 
         return newCard;
@@ -258,6 +259,7 @@ export class TrelloServices {
         if (data.position !== undefined) {
             card.position = data.position;
         }
+        await card.update({ updated_at: sequelize.literal("CURRENT_TIMESTAMP") });
 
         await card.save();
         return card;
@@ -302,7 +304,7 @@ export class TrelloServices {
             user_name_and_surname: data.user_name_and_surname,
             action_type: data.action_type,
             action_details: data.action_details,
-            created_at: new Date(),
+            created_at: sequelize.literal("CURRENT_TIMESTAMP"),
         });
     
         return log;
